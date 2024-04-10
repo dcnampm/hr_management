@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: hr_management
   datasource:
     url: jdbc:mysql://localhost:3306/hrm
     username: root
@@ -14,3 +12,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  application:
+    name: hr_management
+    security:
+      jwt:
+        secret-key: f47f7c942dcce687d2df7835d23b574a39b0ff1344c4f9a1a90c47454114b21f
+        expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days

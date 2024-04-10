@@ -8,8 +8,8 @@ import dev.nampd.hr_management.service.RoleService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 
 @Service
@@ -43,4 +43,14 @@ public class RoleServiceImpl implements RoleService {
         roleRepository.deleteById(roleId);
     }
 
+    @Override
+    public Role getRoleByName(String roleName) {
+        Role foundRole = roleRepository.findByName(roleName);
+
+        if (foundRole != null) {
+            return foundRole;
+        } else {
+            throw new NoSuchElementException("Not found roles with first name: " + roleName);
+        }
+    }
 }

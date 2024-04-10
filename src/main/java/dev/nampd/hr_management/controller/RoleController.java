@@ -1,6 +1,7 @@
 package dev.nampd.hr_management.controller;
 
 import dev.nampd.hr_management.model.GenericResponse;
+import dev.nampd.hr_management.model.entity.Department;
 import dev.nampd.hr_management.model.entity.Role;
 import dev.nampd.hr_management.service.DepartmentService;
 import dev.nampd.hr_management.service.RoleService;

@@ -1,11 +1,12 @@
 package dev.nampd.hr_management.service;
 
 import dev.nampd.hr_management.model.entity.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
 public interface UserService {
-
+    UserDetailsService userDetailsService();
     User getUserById(Long id);
 
     List<User> getUserByFirstName(String firstName);

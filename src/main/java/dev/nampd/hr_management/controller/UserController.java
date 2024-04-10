@@ -1,7 +1,6 @@
 package dev.nampd.hr_management.controller;
 
 import dev.nampd.hr_management.model.GenericResponse;
-import dev.nampd.hr_management.model.entity.Department;
 import dev.nampd.hr_management.model.entity.User;
 import dev.nampd.hr_management.service.UserService;
 import org.springframework.http.HttpStatus;
