@@ -3,7 +3,6 @@ package dev.nampd.hr_management.auth;
 import dev.nampd.hr_management.model.GenericResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +22,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(new GenericResponse<>(authenticationService.authenticate(authenticationRequest)));
     }
 
-    @PostMapping(value = "/refresh-token")
+    @PostMapping("/refresh")
     public ResponseEntity<GenericResponse<AuthenticationResponse>> refreshToken(HttpServletRequest request) {
         return ResponseEntity.ok(new GenericResponse<>(authenticationService.refreshToken(request)));
     }

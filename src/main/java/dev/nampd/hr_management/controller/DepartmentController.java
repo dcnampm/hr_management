@@ -5,6 +5,7 @@ import dev.nampd.hr_management.model.entity.Department;
 import dev.nampd.hr_management.model.entity.Role;
 import dev.nampd.hr_management.service.DepartmentService;
 import dev.nampd.hr_management.service.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,6 +80,10 @@ public class DepartmentController {
         }
     }
 
+    @Operation(
+            summary = "Retrieve roles in department",
+            description = "Get all roles in a department by specifying department's id. The response is a list of roles with id and name"
+    )
     @GetMapping("/roles/{departmentId}")
     public ResponseEntity<GenericResponse<List<Role>>> getRolesInDepartmentById(@PathVariable Long departmentId) {
         List<Role> roles = departmentService.getRolesInDepartment(departmentId);

@@ -1,6 +1,7 @@
 package dev.nampd.hr_management.auth;
 
 import dev.nampd.hr_management.jwt.JwtService;
+import dev.nampd.hr_management.model.entity.User;
 import dev.nampd.hr_management.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -9,14 +10,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -29,16 +28,18 @@ public class AuthenticationService {
                 )
         );
 
-        var user = userRepository.findByEmail(authenticationRequest.getUsername());
-        if (user == null) {
+        var foundUser = userRepository.findByEmail(authenticationRequest.getUsername());
+        if (foundUser.isPresent()) {
+            User user = foundUser.get();
+            var accessToken = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(user);
+
+            return new AuthenticationResponse(accessToken, refreshToken);
+        } else {
             throw new IllegalArgumentException("Invalid email or password");
         }
-
-        var accessToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-
-        return new AuthenticationResponse(accessToken, refreshToken);
     }
+
     public AuthenticationResponse refreshToken(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;

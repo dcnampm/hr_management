@@ -2,17 +2,22 @@ package dev.nampd.hr_management.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(
         name = "users",
         uniqueConstraints = {
@@ -60,7 +65,19 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getName()));
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.role.getName()));
+
+        Set<Permission> permissions = this.role.getPermissions();
+        if (permissions == null || permissions.isEmpty()) {
+            return authorities;
+        }
+
+        permissions.forEach(permission -> {
+            authorities.add(new SimpleGrantedAuthority(permission.getName()));
+        });
+
+        return authorities;
     }
 
     @Override

@@ -3,6 +3,7 @@ package dev.nampd.hr_management.controller;
 import dev.nampd.hr_management.model.GenericResponse;
 import dev.nampd.hr_management.model.entity.User;
 import dev.nampd.hr_management.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<GenericResponse<List<User>>> getAllUsers() {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new GenericResponse<>(userService.getAllUser()));
+                .body(new GenericResponse<>(userService.getAllUsers()));
     }
 
     @GetMapping("/{userId}")
@@ -79,6 +80,9 @@ public class UserController {
         }
     }
 
+    @Operation(
+            summary = "Add user to a department and assign role to user"
+    )
     @PutMapping("/assignRole/{username}")
     public ResponseEntity<String> assignRoleToUser(@PathVariable String username,
                                                    @RequestParam String roleName,
@@ -87,6 +91,9 @@ public class UserController {
         return ResponseEntity.ok("Assigning user to department and assigning role to user " + username + " successfully");
     }
 
+    @Operation(
+            summary = "Unassign user's role and remove user from department"
+    )
     @PutMapping("/remove/{username}")
     public ResponseEntity<String> removeUserFromDepartmentAndUnassginRole(@PathVariable String username) {
         userService.removeUserFromDepartmentAndUnassignRole(username);

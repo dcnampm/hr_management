@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: hr_management
   datasource:
     url: jdbc:mysql://localhost:3306/hrm
     username: root
@@ -12,11 +14,21 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-  application:
-    name: hr_management
-    security:
-      jwt:
-        secret-key: f47f7c942dcce687d2df7835d23b574a39b0ff1344c4f9a1a90c47454114b21f
-        expiration: 86400000 # a day
-      refresh-token:
-        expiration: 604800000 # 7 days
+
+#  #swagger-ui custom path
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+
+application:
+  security:
+    jwt:
+      secret-key: 5d9bcee44a9f0549cf53d86206bf8d1e98c675ce843bab16685e9d1056e64633
+      expiration: 86400000 # a day
+    refresh-token:
+      expiration: 604800000 # 7 days
+
+
