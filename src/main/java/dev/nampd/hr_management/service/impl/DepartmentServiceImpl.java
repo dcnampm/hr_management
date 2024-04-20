@@ -4,6 +4,9 @@ import dev.nampd.hr_management.model.entity.Department;
 import dev.nampd.hr_management.model.entity.Role;
 import dev.nampd.hr_management.repository.DepartmentRepository;
 import dev.nampd.hr_management.service.DepartmentService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,40 +31,45 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Cacheable(value = "departments")
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();
     }
 
     @Override
-    public Department getDepartmentById(Long id) {
-        return departmentRepository.findById(id)
+    @Cacheable(value = "departments", key = "#departmentId")
+    public Department getDepartmentById(Long departmentId) {
+        return departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found"));
     }
 
     @Override
+    @Cacheable(value = "departments", key = "#alias")
     public Department getDepartmentByAlias(String alias) {
         return departmentRepository.findByAlias(alias)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found"));
     }
 
     @Override
-    public Department updateDepartment(Long id, Department updatedDepartment) {
-        Department existingDepartment = departmentRepository.findById(id)
+    @CachePut(value = "departments", key = "#departmentId")
+    public Department updateDepartment(Long departmentId, Department updatedDepartment) {
+        Department existingDepartment = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found"));
         existingDepartment.setName(updatedDepartment.getName());
         existingDepartment.setAlias(updatedDepartment.getAlias());
-        existingDepartment.setRoles(updatedDepartment.getRoles());
+//        existingDepartment.setRoles(updatedDepartment.getRoles());
 
         return departmentRepository.save(existingDepartment);
     }
 
     @Override
-    public void deleteDepartment(Long id) {
-        Optional<Department> existingDepartment = departmentRepository.findById(id);
+    @CacheEvict(value = "departments", allEntries = true)
+    public void deleteDepartment(Long departmentId) {
+        Optional<Department> existingDepartment = departmentRepository.findById(departmentId);
         if (existingDepartment.isPresent()) {
-            departmentRepository.deleteById(id);
+            departmentRepository.deleteById(departmentId);
         } else {
-            throw new NoSuchElementException("Department not found with id: " + id);
+            throw new NoSuchElementException("Department not found with id: " + departmentId);
         }
     }
 
