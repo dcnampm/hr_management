@@ -1,6 +1,7 @@
 package dev.nampd.hr_management.controller;
 
 import dev.nampd.hr_management.model.GenericResponse;
+import dev.nampd.hr_management.model.dto.DepartmentDto;
 import dev.nampd.hr_management.model.entity.Department;
 import dev.nampd.hr_management.model.entity.Role;
 import dev.nampd.hr_management.service.DepartmentService;
@@ -33,16 +34,16 @@ public class DepartmentController {
     }
 
     @GetMapping()
-    public ResponseEntity<GenericResponse<List<Department>>> getAllDepartments() {
+    public ResponseEntity<GenericResponse<List<DepartmentDto>>> getAllDepartments() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new GenericResponse<>(departmentService.getAllDepartments()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GenericResponse<Department>> getDepartmentByID(@PathVariable(name = "id") Long departmentId) {
+    public ResponseEntity<GenericResponse<DepartmentDto>> getDepartmentByID(@PathVariable(name = "id") Long departmentId) {
         try {
-            Department department = departmentService.getDepartmentById(departmentId);
-            return ResponseEntity.ok(new GenericResponse<>(department));
+            DepartmentDto departmentDto = departmentService.getDepartmentById(departmentId);
+            return ResponseEntity.ok(new GenericResponse<>(departmentDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new GenericResponse<>(null, 400, "Failed to get department: " + e.getMessage(), false));
@@ -50,10 +51,10 @@ public class DepartmentController {
     }
 
     @GetMapping("/search/{alias}")
-    public ResponseEntity<GenericResponse<Department>> getDepartmentByAlias(@PathVariable(name = "alias") String alias) {
+    public ResponseEntity<GenericResponse<DepartmentDto>> getDepartmentByAlias(@PathVariable(name = "alias") String alias) {
         try {
-            Department department = departmentService.getDepartmentByAlias(alias);
-            return ResponseEntity.ok(new GenericResponse<>(department));
+            DepartmentDto departmentDto = departmentService.getDepartmentByAlias(alias);
+            return ResponseEntity.ok(new GenericResponse<>(departmentDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new GenericResponse<>(null, 400, "Failed to get department: " + e.getMessage(), false));
@@ -61,10 +62,10 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GenericResponse<Department>> updateDepartment(@PathVariable(name = "id") Long departmentId, @RequestBody Department updatedDepartment) {
+    public ResponseEntity<GenericResponse<DepartmentDto>> updateDepartment(@PathVariable(name = "id") Long departmentId, @RequestBody DepartmentDto updatedDepartmentDto) {
         try {
-            Department department = departmentService.updateDepartment(departmentId, updatedDepartment);
-            return ResponseEntity.ok(new GenericResponse<>(department));
+            DepartmentDto departmentDto = departmentService.updateDepartment(departmentId, updatedDepartmentDto);
+            return ResponseEntity.ok(new GenericResponse<>(departmentDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new GenericResponse<>(null, 400, "Failed to update department: " + e.getMessage(), false));
         }

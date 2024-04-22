@@ -1,5 +1,8 @@
 package dev.nampd.hr_management.service.impl;
 
+import dev.nampd.hr_management.mapper.UserMapper;
+import dev.nampd.hr_management.model.dto.DepartmentDto;
+import dev.nampd.hr_management.model.dto.UserDto;
 import dev.nampd.hr_management.model.entity.Department;
 import dev.nampd.hr_management.model.entity.Role;
 import dev.nampd.hr_management.model.entity.User;
@@ -7,16 +10,17 @@ import dev.nampd.hr_management.repository.DepartmentRepository;
 import dev.nampd.hr_management.repository.RoleRepository;
 import dev.nampd.hr_management.repository.UserRepository;
 import dev.nampd.hr_management.service.UserService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,12 +28,14 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -52,8 +58,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return
+                userRepository.findAll()
+                        .stream()
+                        .map(userMapper::toUserDto)
+                        .collect(Collectors.toList());
     }
 
     @Override
@@ -68,17 +78,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
+    public UserDto getUserById(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return userMapper.toUserDto(user);
     }
 
     @Override
-    public List<User> getUserByFirstName(String firstName) {
+    public List<UserDto> getUserByFirstName(String firstName) {
         List<User> foundUsers = userRepository.findByFirstName(firstName);
 
         if (foundUsers != null && !foundUsers.isEmpty()) {
-            return foundUsers;
+            return foundUsers.stream()
+                    .map(userMapper::toUserDto)
+                    .collect(Collectors.toList()
+            );
         } else {
             throw new NoSuchElementException("Not found users with first name: " + firstName);
         }

@@ -1,5 +1,6 @@
 package dev.nampd.hr_management.service;
 
+import dev.nampd.hr_management.model.dto.DepartmentDto;
 import dev.nampd.hr_management.model.entity.Department;
 import dev.nampd.hr_management.model.entity.Role;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,13 +11,13 @@ public interface DepartmentService {
     @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.CREATE\") or hasAnyRole('ROLE_TPNS')")
     Department createDepartment(Department department);
     @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.READ\") or hasAnyRole('ROLE_TPNS')")
-    List<Department> getAllDepartments();
+    List<DepartmentDto> getAllDepartments();
     @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.READ\") or hasAnyRole('ROLE_TPNS')")
-    Department getDepartmentById(Long id);
+    DepartmentDto getDepartmentById(Long id);
     @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.READ\") or hasAnyRole('ROLE_TPNS')")
-    Department getDepartmentByAlias(String alias);
+    DepartmentDto getDepartmentByAlias(String alias);
     @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.UPDATE\") or hasAnyRole('ROLE_TPNS')")
-    Department updateDepartment(Long id, Department updatedDepartment);
+    DepartmentDto updateDepartment(Long id, DepartmentDto updatedDepartmentDto);
     @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.DELETE\") or hasAnyRole('ROLE_TPNS')")
     void deleteDepartment(Long id);
     @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.READ\") or hasAnyRole('ROLE_TPNS')")

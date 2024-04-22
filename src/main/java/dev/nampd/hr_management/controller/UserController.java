@@ -1,6 +1,7 @@
 package dev.nampd.hr_management.controller;
 
 import dev.nampd.hr_management.model.GenericResponse;
+import dev.nampd.hr_management.model.dto.UserDto;
 import dev.nampd.hr_management.model.entity.User;
 import dev.nampd.hr_management.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,16 +34,16 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<GenericResponse<List<User>>> getAllUsers() {
+    public ResponseEntity<GenericResponse<List<UserDto>>> getAllUsers() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new GenericResponse<>(userService.getAllUsers()));
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<GenericResponse<User>> getUserById(@PathVariable Long userId) {
+    public ResponseEntity<GenericResponse<UserDto>> getUserById(@PathVariable Long userId) {
         try {
-            User user = userService.getUserById(userId);
-            return ResponseEntity.ok(new GenericResponse<>(user));
+            UserDto userDto = userService.getUserById(userId);
+            return ResponseEntity.ok(new GenericResponse<>(userDto));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new GenericResponse<>(null, 400, "Failed to get user: " + e.getMessage(), false));
@@ -50,10 +51,10 @@ public class UserController {
     }
 
     @GetMapping("/search/{firstName}")
-    public ResponseEntity<GenericResponse<List<User>>> getUserByFirstName(@PathVariable String firstName) {
+    public ResponseEntity<GenericResponse<List<UserDto>>> getUserByFirstName(@PathVariable String firstName) {
         try {
-            List<User> users = userService.getUserByFirstName(firstName);
-            return ResponseEntity.ok(new GenericResponse<>(users));
+            List<UserDto> userDtos = userService.getUserByFirstName(firstName);
+            return ResponseEntity.ok(new GenericResponse<>(userDtos));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new GenericResponse<>(null, 400, "Failed to get users: " + e.getMessage(), false));

@@ -1,5 +1,7 @@
 package dev.nampd.hr_management.service.impl;
 
+import dev.nampd.hr_management.mapper.DepartmentMapper;
+import dev.nampd.hr_management.model.dto.DepartmentDto;
 import dev.nampd.hr_management.model.entity.Department;
 import dev.nampd.hr_management.model.entity.Role;
 import dev.nampd.hr_management.repository.DepartmentRepository;
@@ -12,14 +14,17 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
+    private final DepartmentMapper departmentMapper;
 
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
+    public DepartmentServiceImpl(DepartmentRepository departmentRepository, DepartmentMapper departmentMapper) {
         this.departmentRepository = departmentRepository;
+        this.departmentMapper = departmentMapper;
     }
 
     @Override
@@ -32,34 +37,39 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     @Cacheable(value = "departments")
-    public List<Department> getAllDepartments() {
-        return departmentRepository.findAll();
+    public List<DepartmentDto> getAllDepartments() {
+        return departmentRepository.findAll()
+                .stream()
+                .map(departmentMapper::toDepartmentDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Cacheable(value = "departments", key = "#departmentId")
-    public Department getDepartmentById(Long departmentId) {
-        return departmentRepository.findById(departmentId)
+    public DepartmentDto getDepartmentById(Long departmentId) {
+        Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found"));
+        return departmentMapper.toDepartmentDto(department);
     }
 
     @Override
     @Cacheable(value = "departments", key = "#alias")
-    public Department getDepartmentByAlias(String alias) {
-        return departmentRepository.findByAlias(alias)
+    public DepartmentDto getDepartmentByAlias(String alias) {
+        Department department = departmentRepository.findByAlias(alias)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found"));
+        return departmentMapper.toDepartmentDto(department);
     }
 
     @Override
     @CachePut(value = "departments", key = "#departmentId")
-    public Department updateDepartment(Long departmentId, Department updatedDepartment) {
+    public DepartmentDto updateDepartment(Long departmentId, DepartmentDto updatedDepartmentDto) {
         Department existingDepartment = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found"));
-        existingDepartment.setName(updatedDepartment.getName());
-        existingDepartment.setAlias(updatedDepartment.getAlias());
-//        existingDepartment.setRoles(updatedDepartment.getRoles());
+        existingDepartment.setName(updatedDepartmentDto.getName());
+        existingDepartment.setAlias(updatedDepartmentDto.getAlias());
 
-        return departmentRepository.save(existingDepartment);
+        Department updatedDepartment = departmentRepository.save(existingDepartment);
+        return departmentMapper.toDepartmentDto(updatedDepartment);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package dev.nampd.hr_management.redis;
+package dev.nampd.hr_management.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
